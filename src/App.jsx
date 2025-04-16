@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
 
+import { FcEmptyTrash, FcCheckmark } from "react-icons/fc";
+
+import { Button, Container, Input, ToDoList, ListItem }from './styles.js'
+
 function App() {
-  const [list, setList] = useState([{ id: uuid(), task: "Nada" }]);
+  const [list, setList] = useState([{ id: uuid(), task: "Nada", finished: true },
+  ]);
   const [inputTask, setInputTask] = useState("");
 
   function changeInput(event) {
@@ -10,20 +15,34 @@ function App() {
   }
 
   function clickButton() {
-    setList([{ id: uuid(), task: inputTask }]);
+    setList([ ... list, { id: uuid(), task: inputTask, finished: false }]);
+  }
+
+  function taskCompleted(id) {
+    const newList = list.map((item) =>
+      item.id === id ? { ...item, finished: !item.finished } : item
+    );
+
+    setList(newList)
   }
 
   return (
-    <div>
-      <input onChange={changeInput} placeholder="O que tenho para fazer..." />
-      <button onClick={clickButton}>Adicionar</button>
+    <Container>
+      <ToDoList>
+      <Input onChange={changeInput} placeholder="O que tenho para fazer..." />
+      <Button onClick={clickButton}>Adicionar</Button>
 
       <ul>
         {list.map((item) => (
+          <ListItem $isFinished={item.finished} key={item.id}>
+          <FcCheckmark onClick={() => taskCompleted(item.id)}/>
           <li key={item.id}>{item.task}</li>
+          <FcEmptyTrash />
+          </ListItem>
         ))}
       </ul>
-    </div>
+      </ToDoList>
+    </Container>
   );
 }
 
